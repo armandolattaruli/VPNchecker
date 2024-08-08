@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Windows.Forms;
 using VPNchecker.Properties;
+using Microsoft.Win32; // Aggiungi questo riferimento
 
 namespace VPNChecker
 {
@@ -11,6 +12,7 @@ namespace VPNChecker
     {
         private System.Windows.Forms.Timer timer;
         private PictureBox pictureBox;
+        private const string appName = "VPNChecker";
 
         public Form1()
         {
@@ -39,6 +41,21 @@ namespace VPNChecker
 
             // Esegui il controllo iniziale della connessione VPN
             CheckVpnStatus();
+
+            // Aggiungi l'applicazione all'avvio del sistema
+            AddToStartup();
+        }
+
+        private void AddToStartup()
+        {
+            string runKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
+            using (RegistryKey key = Registry.CurrentUser.OpenSubKey(runKey, true))
+            {
+                if (key.GetValue(appName) == null)
+                {
+                    key.SetValue(appName, Application.ExecutablePath);
+                }
+            }
         }
 
         protected override void OnShown(EventArgs e)
